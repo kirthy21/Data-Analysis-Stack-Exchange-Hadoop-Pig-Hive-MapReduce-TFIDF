@@ -19,29 +19,37 @@ Run the following queries on https://data.stackexchange.com/stackoverflow/query/
 We need to run 5 queries as only a maximum of 50,000 rows can be downloaded in one csv. You can also use other queries to sort and download your data. Now you will have 4 to 5 csv which have 2,00,000 records in total.
 
 ### 2. Using Pig or MapReduce, extract, transform and load the data as applicable
-I uploaded the five csv files into my cluster and then put it in hdfs using hdfs -put command.
+I uploaded the five csv files into my cluster and then put it in hdfs using `hdfs -put command`.
 Then run Pig. 
 Register the piggybank jar to the use the CSVLoader function.
 
+```
 > REGISTER /usr/lib/pig/piggybank.jar
 
 > DEFINE CSVLoader org.apache.pig.piggybank.storage.CSVLoader();
+```
 
 Then using the load command, I loaded all the csv files to pig. The following is the load command for the first csv.
 
+```
 > data_stack1  = LOAD 'QueryResults1.csv' using org.apache.pig.piggybank.storage.CSVExcelStorage(',', 'YES_MULTILINE', 'NOCHANGE','SKIP_INPUT_HEADER') as (Id:chararray, PostTypeId:chararray, AcceptedAnswerId:chararray,	ParentId:chararray,	CreationDate:chararray,	DeletionDate:chararray,	Score:chararray, ViewCount:chararray,	Body:chararray,	OwnerUserId:chararray,	OwnerDisplayName:chararray,	LastEditorUserId:chararray, LastEditorDisplayName:chararray, LastEditDate:chararray,	LastActivityDate:chararray,	Title:chararray,	Tags:chararray,	AnswerCount:chararray, CommentCount:chararray,	FavoriteCount:chararray, ClosedDate:chararray, CommunityOwnedDate:chararray);
+```
 
 Combine all the loaded files to give a combined file of 2,00,000, then take only some required files and filter the null values in OwnerUserId and OwnerDisplayName.
 
+```
 > combined_data = UNION data_stack1, data_stack2, data_stack3, data_stack4,data_stack5 ;
 
 > d1 = FOREACH combined_data GENERATE Id, Score, ViewCount, Body, OwnerUserId, OwnerDisplayName, Title, Tags;
 
 > filtered = FILTER d1 by ((OwnerUserId != '') AND (OwnerDisplayName != ''));
+```
 
 The body column has many special characters which make the data messy, so we replace all special characters with spaces using REPLACE function. Then we put the data into the hdfs into a folder called result. The exit pig using `quit` command.
 
+```
 > STORE A INTO 'result' USING org.apache.pig.piggybank.storage.CSVExcelStorage(',','YES_MULTILINE','NOCHANGE');
+```
 
 The results are saved into parts, merge these parts and put it into a csv using `hadoop fs -getmerge` command. 
 
