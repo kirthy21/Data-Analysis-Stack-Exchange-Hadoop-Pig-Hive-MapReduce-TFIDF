@@ -1,5 +1,5 @@
 # Data Analysis using data from Stack Exchange (Hadoop, Pig, Hive, MapReduce) 
-The following was preformed on a cluster in Dataproc in Google Cloud Platform (GCP) which already has Hadoop, Pig and Hive.
+The following was performed on a cluster in Dataproc in Google Cloud Platform (GCP) which already has Hadoop, Pig and Hive.
 
 ### 1. Acquire the top 200,000 posts by viewcount (From Stack Exchange)
 Run the following queries on https://data.stackexchange.com/stackoverflow/query/new and download the data as csv.
