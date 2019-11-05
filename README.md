@@ -31,7 +31,9 @@ Then using the load command, I loaded all the csv files to pig. The following is
 Combine all the loaded files to give a combined file of 2,00,000, then take only some required files and filter the null values in OwnerUserId and OwnerDisplayName.
 
 > combined_data = UNION data_stack1, data_stack2, data_stack3, data_stack4,data_stack5 ;
+
 > d1 = FOREACH combined_data GENERATE Id, Score, ViewCount, Body, OwnerUserId, OwnerDisplayName, Title, Tags;
+
 > filtered = FILTER d1 by ((OwnerUserId != '') AND (OwnerDisplayName != ''));
 
 
