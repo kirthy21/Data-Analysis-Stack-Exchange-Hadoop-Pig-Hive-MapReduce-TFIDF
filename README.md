@@ -4,6 +4,7 @@ The following was preformed on a cluster in Dataproc in Google Cloud Platform (G
 ### 1. Acquire the top 200,000 posts by viewcount (From Stack Exchange)
 Run the following queries on https://data.stackexchange.com/stackoverflow/query/new and download the data as csv.
 
+```
 > select * from posts where posts.ViewCount > 100000 ORDER BY posts.ViewCount DESC
 
 > select * from posts where posts.ViewCount <=100000 and posts.ViewCount >58000 ORDER BY posts.ViewCount DESC
@@ -13,6 +14,7 @@ Run the following queries on https://data.stackexchange.com/stackoverflow/query/
 > select * from posts where posts.ViewCount <=42500 and posts.ViewCount >33000 ORDER BY posts.ViewCount DESC
 
 > select top 9458* from posts where posts.ViewCount <=33000 and posts.ViewCount >30000 ORDER BY posts.ViewCount DESC
+```
 
 We need to run 5 queries as only a maximum of 50,000 rows can be downloaded in one csv. You can also use other queries to sort and download your data. Now you will have 4 to 5 csv which have 2,00,000 records in total.
 
@@ -37,11 +39,11 @@ Combine all the loaded files to give a combined file of 2,00,000, then take only
 
 > filtered = FILTER d1 by ((OwnerUserId != '') AND (OwnerDisplayName != ''));
 
-The body column has many special characters which make the data messy, so we replace all special characters with spaces using REPLACE function. Then we put the data into the hdfs into a folder called result. The exit pig using 'quit' command.
+The body column has many special characters which make the data messy, so we replace all special characters with spaces using REPLACE function. Then we put the data into the hdfs into a folder called result. The exit pig using `quit` command.
 
 > STORE A INTO 'result' USING org.apache.pig.piggybank.storage.CSVExcelStorage(',','YES_MULTILINE','NOCHANGE');
 
-The results are saved into parts, merge these parts and put it into a csv using 'hadoop fs -getmerge' command. 
+The results are saved into parts, merge these parts and put it into a csv using `hadoop fs -getmerge` command. 
 
 ### 3. Using Hive and/or MapReduce, get:
 #### I. The top 10 posts by score
