@@ -35,7 +35,7 @@ Then using the load command, I loaded all the csv files to pig. The following is
 > data_stack1  = LOAD 'QueryResults1.csv' using org.apache.pig.piggybank.storage.CSVExcelStorage(',', 'YES_MULTILINE', 'NOCHANGE','SKIP_INPUT_HEADER') as (Id:chararray, PostTypeId:chararray, AcceptedAnswerId:chararray,	ParentId:chararray,	CreationDate:chararray,	DeletionDate:chararray,	Score:chararray, ViewCount:chararray,	Body:chararray,	OwnerUserId:chararray,	OwnerDisplayName:chararray,	LastEditorUserId:chararray, LastEditorDisplayName:chararray, LastEditDate:chararray,	LastActivityDate:chararray,	Title:chararray,	Tags:chararray,	AnswerCount:chararray, CommentCount:chararray,	FavoriteCount:chararray, ClosedDate:chararray, CommunityOwnedDate:chararray);
 ```
 
-Combine all the loaded files to give a combined file of 2,00,000, then take only some required files and filter the null values in OwnerUserId and OwnerDisplayName.
+Combine all the loaded files to give a combined file of 2,00,000, then take only some required fields and filter the null values in OwnerUserId and OwnerDisplayName.
 
 ```
 > combined_data = UNION data_stack1, data_stack2, data_stack3, data_stack4,data_stack5 ;
