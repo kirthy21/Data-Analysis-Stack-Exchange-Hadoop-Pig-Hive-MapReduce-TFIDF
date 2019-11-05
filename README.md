@@ -51,10 +51,61 @@ The body column has many special characters which make the data messy, so we rep
 > STORE A INTO 'result' USING org.apache.pig.piggybank.storage.CSVExcelStorage(',','YES_MULTILINE','NOCHANGE');
 ```
 
-The results are saved into parts, merge these parts and put it into a csv using `hadoop fs -getmerge` command. 
+The results are saved into parts, merge these parts and put it into a csv(Query.csv) using `hadoop fs -getmerge` command. 
 
 ### 3. Using Hive and/or MapReduce, get:
+
+Run hive using `hive` command. Create an external table in hive (data_exch) and load the data into the table.
+
+```
+> create external table if not exists data_exch (Id int, Score int, ViewCount int,Body String, OwnerUserId int, OwnerDisplayName string, Title string, Tags string)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+
+> load data local inpath 'Query.csv' overwrite into table data_exch;
+```
+
 #### I. The top 10 posts by score
+
+Run the following query to get the top posts by score.
+
+```
+> select distinct score from data_exch order by score desc limit 10;
+```
+
 #### II. The top 10 users by post score
+
+Create a table with aliases for columns and run the query on this table. 
+```
+> create table grouped_users_posts as select ownerUserId as a, Body as b,SUM(Score) as c from data_exch group by ownerUserId,Body;
+
+> select a,c from grouped_users_posts order by c desc limit 10;
+```
+
 #### III. The number of distinct users, who used the word “Hadoop” in one of their posts
+
+Run the following query to find the distinct number of users, who used the word “Hadoop” in one of their posts.
+
+```
+> select COUNT(DISTINCT OwnerUserId) from data_exch where lower(Body) like '%hadoop%';
+```
+
+Put the table with selected columns for Q.4 into the local using the following
+
+```
+> INSERT OVERWRITE LOCAL DIRECTORY '/home/kirthyodackal/tfidfdata' 
+ROW FORMAT DELIMITED 
+FIELDS TERMINATED BY ',' 
+select OwnerUserId,Body from data_exch where OwnerUserId in (select OwnerId from grouped_users_data);
+```
+The result file will be stored in the path mentioned in the insert overwrite command. If more than one file, merge them into a single file after replacing the comma with spaces to be used in Q4. The mapreduce program needs the input file to be separated by space rather than comma. Move them into a folder in the local from hdfs.
+
+```
+> cd tfidfdata
+> sed 's/,/ /g' 000000_0 > inputfile
+
+> hadoop fs -mkdir /mappred
+> hadoop fs -put inputfile /mappred
+```
+
 ### 4. Using Mapreduce calculate the per-user TF-IDF (just submit the top 10 terms for each of the top 10 users from Query 3.II)
