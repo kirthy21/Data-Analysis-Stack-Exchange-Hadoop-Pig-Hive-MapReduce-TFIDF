@@ -37,6 +37,11 @@ Combine all the loaded files to give a combined file of 2,00,000, then take only
 
 > filtered = FILTER d1 by ((OwnerUserId != '') AND (OwnerDisplayName != ''));
 
+The body column has many special characters which make the data messy, so we replace all special characters with spaces using REPLACE function. Then we put the data into the hdfs into a folder called result. The exit pig using 'quit' command.
+
+> STORE A INTO 'result' USING org.apache.pig.piggybank.storage.CSVExcelStorage(',','YES_MULTILINE','NOCHANGE');
+
+The results are saved into parts, merge these parts and put it into a csv using 'hadoop fs -getmerge' command. 
 
 ### 3. Using Hive and/or MapReduce, get:
 #### I. The top 10 posts by score
