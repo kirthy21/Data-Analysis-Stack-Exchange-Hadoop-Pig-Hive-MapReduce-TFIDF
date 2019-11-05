@@ -3,16 +3,18 @@ The following was preformed on a cluster in Dataproc in Google Cloud Platform (G
 
 ### 1. Acquire the top 200,000 posts by viewcount (From Stack Exchange)
 Run the following queries on https://data.stackexchange.com/stackoverflow/query/new and download the data as csv.
+'''
 
-> select * from posts where posts.ViewCount > 100000 ORDER BY posts.ViewCount DESC
+select * from posts where posts.ViewCount > 100000 ORDER BY posts.ViewCount DESC
 
-> select * from posts where posts.ViewCount <=100000 and posts.ViewCount >58000 ORDER BY posts.ViewCount DESC
+select * from posts where posts.ViewCount <=100000 and posts.ViewCount >58000 ORDER BY posts.ViewCount DESC
 
-> select * from posts where posts.ViewCount <=58000 and posts.ViewCount >42500 ORDER BY posts.ViewCount DESC
+select * from posts where posts.ViewCount <=58000 and posts.ViewCount >42500 ORDER BY posts.ViewCount DESC
 
-> select * from posts where posts.ViewCount <=42500 and posts.ViewCount >33000 ORDER BY posts.ViewCount DESC
+select * from posts where posts.ViewCount <=42500 and posts.ViewCount >33000 ORDER BY posts.ViewCount DESC
 
-> select top 9458* from posts where posts.ViewCount <=33000 and posts.ViewCount >30000 ORDER BY posts.ViewCount DESC
+select top 9458* from posts where posts.ViewCount <=33000 and posts.ViewCount >30000 ORDER BY posts.ViewCount DESC
+'''
 
 We need to run 5 queries as only a maximum of 50,000 rows can be downloaded in one csv. You can also use other queries to sort and download your data. Now you will have 4 to 5 csv which have 2,00,000 records in total.
 
@@ -22,6 +24,7 @@ Then run Pig.
 Register the piggybank jar to the use the CSVLoader function.
 
 > REGISTER /usr/lib/pig/piggybank.jar
+
 > DEFINE CSVLoader org.apache.pig.piggybank.storage.CSVLoader();
 
 Then using the load command, I loaded all the csv files to pig. The following is the load command for the first csv.
