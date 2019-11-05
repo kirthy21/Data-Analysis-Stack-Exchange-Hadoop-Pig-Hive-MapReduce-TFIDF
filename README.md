@@ -143,3 +143,5 @@ ORDER BY tfidf DESC) AS TfidfRank, *
 FROM TfIDF_data2) n
 WHERE TfidfRank IN (1,2,3,4,5,6,7,8,9,10);
 ```
+
+The mapreduce programs are from https://github.com/SatishUC15/TFIDF-HadoopMapReduce#tfidf-hadoop with minor changes (i.e. addition of stop words and the related `if` condition in MapperPhaseOne.py)
