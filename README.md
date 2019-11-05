@@ -4,15 +4,10 @@ The following was preformed on a cluster in Dataproc in Google Cloud Platform (G
 ### 1. Acquire the top 200,000 posts by viewcount (From Stack Exchange)
 Run the following queries on https://data.stackexchange.com/stackoverflow/query/new and download the data as csv.
 '''
-
 select * from posts where posts.ViewCount > 100000 ORDER BY posts.ViewCount DESC
-
 select * from posts where posts.ViewCount <=100000 and posts.ViewCount >58000 ORDER BY posts.ViewCount DESC
-
 select * from posts where posts.ViewCount <=58000 and posts.ViewCount >42500 ORDER BY posts.ViewCount DESC
-
 select * from posts where posts.ViewCount <=42500 and posts.ViewCount >33000 ORDER BY posts.ViewCount DESC
-
 select top 9458* from posts where posts.ViewCount <=33000 and posts.ViewCount >30000 ORDER BY posts.ViewCount DESC
 '''
 
