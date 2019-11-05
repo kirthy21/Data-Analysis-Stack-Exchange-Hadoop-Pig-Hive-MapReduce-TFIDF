@@ -1,5 +1,5 @@
 # Data Analysis using data from Stack Exchange (Hadoop, Pig, Hive, MapReduce) 
-The following was preformed on a cluster in Dataproc in Google Cloud Platform (GCP) which already has Hadoop, Pig and Hive. For mapreduce I used the files from https://github.com/SatishUC15/TFIDF-HadoopMapReduce#tfidf-hadoop with minor changes.
+The following was preformed on a cluster in Dataproc in Google Cloud Platform (GCP) which already has Hadoop, Pig and Hive.
 
 ### 1. Acquire the top 200,000 posts by viewcount (From Stack Exchange)
 Run the following queries on https://data.stackexchange.com/stackoverflow/query/new and download the data as csv.
@@ -109,3 +109,37 @@ The result file will be stored in the path mentioned in the insert overwrite com
 ```
 
 ### 4. Using Mapreduce calculate the per-user TF-IDF (just submit the top 10 terms for each of the top 10 users from Query 3.II)
+
+Implementation of TFIDF in Hadoop using Python will be in three phases using three mappers and three reducers. Use the following commands to run TF-IDF on the cluster.
+
+```
+> hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming.jar -file /home/kirthyodackal/MapperPhaseOne.py /home/kirthyodackal/ReducerPhaseOne.py -mapper "python MapperPhaseOne.py" -reducer "python ReducerPhaseOne.py" -input hdfs://cluster-3299-m/mapinput/inputfile -output hdfs://cluster-3299-m/mappred1
+
+> hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming.jar -file /home/kirthyodackal/MapperPhaseTwo.py /home/kirthyodackal/ReducerPhaseTwo.py -mapper "python MapperPhaseTwo.py" -reducer "python ReducerPhaseTwo.py" -input hdfs://cluster-3299-m/mappred1/part-00000 hdfs://cluster-3299-m/mappred1/part-00001 hdfs://cluster-3299-m/mappred1/part-00002 hdfs://cluster-3299-m/mappred1/part-00003 hdfs://cluster-3299-m/mappred1/part-00004	 -output hdfs://cluster-3299-m/mappred2
+
+> hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming.jar -file /home/kirthyodackal/MapperPhaseThree.py /home/kirthyodackal/ReducerPhaseThree.py -mapper "python MapperPhaseThree.py" -reducer "python ReducerPhaseThree.py" -input hdfs://cluster-3299-m/mappred2/part-00000 hdfs://cluster-3299-m/mappred2/part-00001 hdfs://cluster-3299-m/mappred2/part-00002 hdfs://cluster-3299-m/mappred2/part-00003 hdfs://cluster-3299-m/mappred2/part-00004	 -output hdfs://cluster-3299-m/mappredf
+```
+
+Use the `hadoop fs -getmerge` command to merge the output files into a single csv into the local (tfidfout.csv). Remove the and save this into another csv (tfidfout1.csv). Create an external table in hive and load the csv into the table.
+
+```
+> sed -e 's/\s/,/g' tfidfout.csv > tfidfout1.csv
+
+> create external table if not exists TFIDF_data2 (Term String,Id int,tfidf float)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+
+load data local inpath 'tfidfout1.csv' overwrite into table TFIDF_data2;
+```
+
+Run the following query to get the top 10 terms for each of the top 10 users from Query 3.II.
+
+```
+SELECT *
+FROM (
+SELECT ROW_NUMBER()
+OVER(PARTITION BY Id
+ORDER BY tfidf DESC) AS TfidfRank, *
+FROM TfIDF_data2) n
+WHERE TfidfRank IN (1,2,3,4,5,6,7,8,9,10);
+```
