@@ -120,7 +120,7 @@ Implementation of TFIDF in Hadoop using Python will be in three phases using thr
 > hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming.jar -file /home/kirthyodackal/MapperPhaseThree.py /home/kirthyodackal/ReducerPhaseThree.py -mapper "python MapperPhaseThree.py" -reducer "python ReducerPhaseThree.py" -input hdfs://cluster-3299-m/mappred2/part-00000 hdfs://cluster-3299-m/mappred2/part-00001 hdfs://cluster-3299-m/mappred2/part-00002 hdfs://cluster-3299-m/mappred2/part-00003 hdfs://cluster-3299-m/mappred2/part-00004	 -output hdfs://cluster-3299-m/mappredf
 ```
 
-Use the `hadoop fs -getmerge` command to merge the output files into a single csv into the local (tfidfout.csv). Remove the and save this into another csv (tfidfout1.csv). Create an external table in hive and load the csv into the table.
+Use the `hadoop fs -getmerge` command to merge the output files into a single csv into the local (tfidfout.csv). Replace the spaces with and save this into another csv (tfidfout1.csv). Create an external table in hive and load the csv into the table.
 
 ```
 > sed -e 's/\s/,/g' tfidfout.csv > tfidfout1.csv
