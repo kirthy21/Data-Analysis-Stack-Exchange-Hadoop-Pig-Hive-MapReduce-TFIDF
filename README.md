@@ -19,7 +19,7 @@ Run the following queries on https://data.stackexchange.com/stackoverflow/query/
 We need to run 5 queries as only a maximum of 50,000 rows can be downloaded in one csv. You can also use other queries to sort and download your data. Now you will have 4 to 5 csv which have 2,00,000 records in total.
 
 ### 2. Using Pig or MapReduce, extract, transform and load the data as applicable
-I uploaded the five csv files into my cluster and then put it in hdfs using `hdfs -put command`.
+I uploaded the five csv files into my cluster and then put it in hdfs using `hdfs -put` command.
 Then run Pig. 
 Register the piggybank jar to the use the CSVLoader function.
 
