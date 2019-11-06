@@ -70,14 +70,14 @@ FIELDS TERMINATED BY ',';
 Run the following query to get the top posts by score.
 
 ```
-> select distinct score from data_exch order by score desc limit 10;
+> select distinct Score,Body from data_exch order by Score desc limit 10;
 ```
 
 #### II. The top 10 users by post score
 
 Create a table with aliases for columns and run the query on this table. 
 ```
-> create table grouped_users_posts as select ownerUserId as a, Body as b,SUM(Score) as c from data_exch group by ownerUserId,Body;
+> create table grouped_users_posts as select OwnerUserId as a, Body as b,SUM(Score) as c from data_exch group by OwnerUserId,Body;
 
 > select a,c from grouped_users_posts order by c desc limit 10;
 ```
